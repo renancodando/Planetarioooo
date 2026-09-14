@@ -1,0 +1,1 @@
+varying vec3 normalVista;varying vec3 posicaoVista;void main(){vec4 p=modelViewMatrix*vec4(position,1.);normalVista=normalize(normalMatrix*normal);posicaoVista=p.xyz;gl_Position=projectionMatrix*p;}

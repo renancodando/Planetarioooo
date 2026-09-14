@@ -1,0 +1,309 @@
+<div id="bif-workspace" class="bif-area" hidden>
+  <nav class="bif-navegacao hud" aria-label="Universo Bifurcado">
+    <div class="bif-navegacao-grupo">
+      <button id="bif-instrumentos" aria-pressed="true">Experimento</button>
+      <button id="bif-leituras" aria-pressed="false">Análise</button>
+      <button id="bif-cena-limpa" aria-pressed="false">Cena limpa</button>
+    </div>
+    <button id="bif-voltar">← Planetário</button>
+  </nav>
+
+  <aside class="bif-painel bif-experimento hud aberto" id="bif-config" aria-label="Experimento">
+    <div class="bif-painel-cabecalho">
+      <div class="bif-titulo">
+        <span class="bif-selo">LABORATÓRIO GRAVITACIONAL</span>
+        <h2>Universo Bifurcado</h2>
+      </div>
+      <button id="bif-fechar-experimento" class="bif-fechar-painel" aria-label="Fechar experimento">×</button>
+    </div>
+
+    <div class="bif-essencial">
+      <label>
+        Instante
+        <input id="bif-data" aria-label="Data da bifurcação" value="13/04/2029" inputmode="numeric" />
+      </label>
+      <div class="bif-dupla bif-acoes-data">
+        <button id="bif-instante">Aplicar data</button>
+        <button id="bif-epoca-jpl">Época JPL</button>
+      </div>
+      <label>
+        Corpo
+        <select id="bif-corpo" aria-label="Corpo da bifurcação"></select>
+      </label>
+      <p id="bif-fonte" class="bif-nota bif-nota-curta"></p>
+      <label>
+        Intervenção
+        <select id="bif-tipo">
+          <option value="impulso">Aplicar Δv</option>
+          <option value="massa">Massa relativa</option>
+          <option value="massa-absoluta">Massa absoluta hipotética</option>
+          <option value="posicao">Deslocar posição</option>
+          <option value="velocidade">Alterar velocidade XYZ</option>
+          <option value="elementos">Editar elementos orbitais</option>
+          <option value="remover">Remover da realidade B</option>
+          <option value="artificial">Adicionar corpo artificial</option>
+        </select>
+      </label>
+      <div id="bif-valor-campo">
+        <label>
+          <span id="bif-valor-label">Magnitude do impulso · m/s</span>
+          <input id="bif-valor" type="number" value="2" step="any" />
+        </label>
+      </div>
+      <label id="bif-direcao-campo">
+        Direção
+        <select id="bif-direcao">
+          <option value="prograde">Prograde · sentido da velocidade</option>
+          <option value="retrograde">Retrograde · contra a velocidade</option>
+          <option value="normal">Normal · momento angular</option>
+          <option value="antinormal">Antinormal</option>
+          <option value="radial">Radial · para fora</option>
+          <option value="antirradial">Antirradial · para o Sol</option>
+          <option value="manual">Vetor manual XYZ</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset id="bif-vetor-campo" hidden>
+      <legend id="bif-vetor-label">Vetor na eclíptica J2000</legend>
+      <div class="bif-tripla">
+        <label>X<input id="bif-x" type="number" step="any" value="1" /></label>
+        <label>Y<input id="bif-y" type="number" step="any" value="0" /></label>
+        <label>Z<input id="bif-z" type="number" step="any" value="0" /></label>
+      </div>
+    </fieldset>
+
+    <fieldset id="bif-elementos" hidden>
+      <legend>Elementos osculantes · heliocêntricos</legend>
+      <div class="bif-dupla">
+        <label>a · UA<input id="bif-a" type="number" step="any" /></label>
+        <label>e<input id="bif-e" type="number" step="any" /></label>
+        <label>i · °<input id="bif-i" type="number" step="any" /></label>
+        <label>Nodo Ω · °<input id="bif-om" type="number" step="any" /></label>
+        <label>Periélio ω · °<input id="bif-w" type="number" step="any" /></label>
+        <label>Anomalia M · °<input id="bif-ma" type="number" step="any" /></label>
+      </div>
+    </fieldset>
+
+    <fieldset id="bif-artificial" hidden>
+      <legend>Hipótese · corpo artificial</legend>
+      <label>Nome<input id="bif-art-nome" value="Asteroide experimental" maxlength="60" /></label>
+      <div class="bif-dupla">
+        <label>Massa · kg<input id="bif-art-massa" type="number" value="1e15" step="any" /></label>
+        <label>Raio físico · km<input id="bif-art-raio" type="number" value="5" step="any" /></label>
+        <label>Raio didático<input id="bif-art-visual" type="number" value="1" min="0.25" max="8" step="0.25" /></label>
+        <output id="bif-densidade"></output>
+      </div>
+      <p class="bif-nota">Posição heliocêntrica em UA; velocidade em km/s.</p>
+      <div class="bif-tripla">
+        <label>X<input id="bif-art-x" type="number" value="1.5" step="any" /></label>
+        <label>Y<input id="bif-art-y" type="number" value="0" step="any" /></label>
+        <label>Z<input id="bif-art-z" type="number" value="0" step="any" /></label>
+        <label>Vx<input id="bif-art-vx" type="number" value="0" step="any" /></label>
+        <label>Vy<input id="bif-art-vy" type="number" value="24" step="any" /></label>
+        <label>Vz<input id="bif-art-vz" type="number" value="0" step="any" /></label>
+      </div>
+    </fieldset>
+
+    <details class="bif-bloco">
+      <summary>Estado inicial A / B</summary>
+      <div id="bif-originais" class="bif-medidas"></div>
+    </details>
+
+    <details class="bif-bloco">
+      <summary>Integração</summary>
+      <div class="bif-dupla">
+        <label>Duração · anos<input id="bif-duracao" type="number" value="10" min="0.000001" max="1000" step="any" /></label>
+        <label>
+          Passo máximo
+          <select id="bif-passo">
+            <option value="0.25">6 horas</option>
+            <option value="0.125" selected>3 horas</option>
+            <option value="0.03125">45 minutos</option>
+          </select>
+        </label>
+      </div>
+      <p class="bif-nota">Velocity Verlet em precisão dupla. Passos menores nos encontros. Modelo newtoniano; resultados longos são hipóteses.</p>
+    </details>
+
+    <button id="bif-criar" class="bif-primario">CRIAR BIFURCAÇÃO TEMPORAL</button>
+
+    <div id="bif-andamento" class="bif-andamento" hidden>
+      <progress id="bif-progresso" max="1" value="0"></progress>
+      <p id="bif-status" role="status"></p>
+      <button id="bif-cancelar">Interromper cálculo</button>
+    </div>
+
+    <details class="bif-bloco">
+      <summary>Salvar e exportar</summary>
+      <div class="bif-dupla">
+        <button id="bif-salvar">Salvar experiência</button>
+        <button id="bif-exportar">Exportar JSON</button>
+        <button id="bif-relatorio">Relatório textual</button>
+        <button id="bif-png">Capturar PNG</button>
+      </div>
+      <label class="arquivo">Importar experiência<input id="bif-importar" type="file" accept=".json,application/json" /></label>
+      <button id="bif-listar">Reabrir experiência salva</button>
+      <div id="bif-salvos"></div>
+    </details>
+  </aside>
+
+  <aside class="bif-painel bif-analise hud" id="bif-analise" aria-label="Análise">
+    <div class="bif-painel-cabecalho">
+      <div class="bif-titulo">
+        <span class="bif-selo">ANÁLISE</span>
+        <h2>Divergência A / B</h2>
+      </div>
+      <button id="bif-fechar-analise" class="bif-fechar-painel" aria-label="Fechar análise">×</button>
+    </div>
+
+    <label>
+      Leitura
+      <select id="bif-leitura">
+        <option value="diferencas">Diferenças e estabilidade</option>
+        <option value="causalidade">Causalidade</option>
+        <option value="eventos">Eventos da simulação</option>
+        <option value="incerteza">Monte Carlo · cone de futuros</option>
+        <option value="catalogo">Encontros e defesa planetária</option>
+      </select>
+    </label>
+
+    <details class="bif-bloco" id="bif-visualizacao-bloco">
+      <summary>Visualização A / B</summary>
+      <div id="bif-visualizacao">
+        <label>
+          Comparação
+          <select id="bif-modo">
+            <option value="sobreposicao">Sobreposição</option>
+            <option value="lado">Lado a lado</option>
+            <option value="vertical">Divisão vertical</option>
+            <option value="horizontal">Divisão horizontal</option>
+            <option value="morph">Morph entre realidades</option>
+            <option value="fantasma">Fantasma orbital</option>
+            <option value="vetorial">Diferença vetorial</option>
+          </select>
+        </label>
+        <label id="bif-morph-campo" hidden>Mistura A → B<input id="bif-morph" type="range" min="0" max="1" value="0.5" step="0.001" /></label>
+        <label>
+          Amplificação visual
+          <select id="bif-ganho">
+            <option value="1">×1 · diferença calculada</option>
+            <option value="100">×100</option>
+            <option value="10000">×10.000</option>
+            <option value="1000000">×1.000.000</option>
+          </select>
+        </label>
+        <div class="bif-opcoes">
+          <label>Realidade B<input id="bif-camada-b" type="checkbox" checked /></label>
+          <label>Rastros A/B<input id="bif-rastros" type="checkbox" checked /></label>
+          <label>Vetores<input id="bif-vetores" type="checkbox" /></label>
+          <label>Causalidade<input id="bif-linhas-causais" type="checkbox" /></label>
+        </div>
+        <div class="bif-dupla">
+          <button id="bif-focar" disabled>Seguir corpo B</button>
+          <button id="bif-geral">Visão A/B</button>
+        </div>
+      </div>
+    </details>
+
+    <section data-bif-leitura="diferencas">
+      <h3>Efeito borboleta</h3>
+      <canvas id="bif-grafico" aria-label="Divergência do corpo selecionado em quilômetros ao longo da simulação"></canvas>
+      <p class="bif-nota" id="bif-grafico-legenda">Execute um experimento para registrar a divergência.</p>
+      <div id="bif-diferencas" class="bif-medidas"></div>
+      <h3>Estabilidade numérica</h3>
+      <div id="bif-estabilidade" class="bif-medidas"></div>
+    </section>
+
+    <section data-bif-leitura="causalidade" hidden>
+      <h3>Influência diferencial</h3>
+      <p class="bif-nota">As ligações mostram a maior contribuição instantânea à diferença de aceleração. Isso indica influência gravitacional, não uma cadeia causal única.</p>
+      <div id="bif-causas"></div>
+    </section>
+
+    <section data-bif-leitura="eventos" hidden>
+      <h3>Linha de eventos</h3>
+      <p class="bif-nota">Aproximações e limiares são amostrados. Colisões são verificadas a cada passo.</p>
+      <div id="bif-eventos"></div>
+    </section>
+
+    <section data-bif-leitura="incerteza" hidden>
+      <h3>Cone de futuros</h3>
+      <p id="bif-covariancia" class="bif-nota"></p>
+      <div class="bif-dupla">
+        <label>
+          Amostras
+          <select id="bif-amostras">
+            <option value="auto">Automático</option>
+            <option value="100">100</option>
+            <option value="1000">1.000</option>
+            <option value="10000">10.000</option>
+          </select>
+        </label>
+        <label>Seed<input id="bif-seed" type="number" value="2029" step="1" /></label>
+      </div>
+      <button id="bif-montecarlo" class="bif-botao-largo">Executar Monte Carlo</button>
+      <div class="bif-opcoes">
+        <label>Mostrar cone<input id="bif-cone" type="checkbox" checked /></label>
+      </div>
+      <label>
+        Amplificação da dispersão
+        <select id="bif-ganho-cone">
+          <option value="1">×1 · escala calculada</option>
+          <option value="10000">×10.000 · somente visual</option>
+          <option value="1000000">×1.000.000 · somente visual</option>
+        </select>
+      </label>
+      <label>
+        Métrica
+        <select id="bif-metrica">
+          <option value="dispersao">Dispersão da órbita nominal · km</option>
+          <option value="velocidade">Velocidade · km/s</option>
+          <option value="terra">Distância da Terra · km</option>
+          <option value="sol">Distância do Sol · km</option>
+        </select>
+      </label>
+      <div id="bif-percentis" class="bif-medidas"></div>
+      <details class="bif-bloco bif-metodologia">
+        <summary>Metodologia</summary>
+        <p class="bif-nota">Gaussianas correlacionadas da covariância SBDB com propagação kepleriana de dois corpos. Os percentis pertencem à amostra e não representam probabilidade oficial de impacto.</p>
+      </details>
+    </section>
+
+    <section data-bif-leitura="catalogo" hidden>
+      <h3>Encontros cósmicos</h3>
+      <label>
+        Corpo central
+        <select id="bif-centro-encontro">
+          <option value="Earth">Terra</option>
+          <option value="Moon">Lua</option>
+          <option value="Mars">Marte</option>
+          <option value="Juptr">Júpiter</option>
+          <option value="todos">Todos disponíveis</option>
+        </select>
+      </label>
+      <label>Pesquisar objeto<input id="bif-busca-encontro" placeholder="Apophis, designação…" /></label>
+      <div id="bif-encontros"></div>
+      <h3>Defesa planetária</h3>
+      <p id="bif-defesa-nota" class="bif-nota"></p>
+      <div id="bif-classe"></div>
+      <div class="bif-dupla">
+        <button id="bif-sentry">Arquivo Sentry</button>
+        <button id="bif-scout">Arquivo Scout</button>
+      </div>
+      <label class="arquivo">Importar catálogo / SBDB / vetores<input id="bif-importar-catalogo" type="file" accept=".json,application/json" /></label>
+    </section>
+
+    <p id="bif-mensagem" role="status" aria-live="polite"></p>
+  </aside>
+
+  <div class="bif-relogio hud">
+    <div class="bif-relogio-linha">
+      <span id="bif-rotulo-a">A · BASE</span>
+      <strong id="bif-relogio-texto">O futuro pode ser perturbado.</strong>
+      <span id="bif-rotulo-b">B · HIPÓTESE</span>
+    </div>
+    <small id="bif-confianca">Linha-base inicial: cálculo local ou efeméride arquivada.</small>
+    <input id="bif-scrub" aria-label="Percorrer a simulação bifurcada" type="range" min="0" max="1" step="0.00001" value="0" disabled />
+  </div>
+</div>

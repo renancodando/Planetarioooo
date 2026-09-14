@@ -1,0 +1,1 @@
+uniform vec3 cor;uniform float intensidade;varying vec3 normalVista;varying vec3 posicaoVista;void main(){float borda=pow(1.-abs(dot(normalize(normalVista),normalize(-posicaoVista))),3.);gl_FragColor=vec4(cor,borda*intensidade);}

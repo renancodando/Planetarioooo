@@ -1,0 +1,3 @@
+uniform float tempo;varying vec3 ponto;varying vec3 normalLocal;
+float ru(float n){return fract(sin(n)*43758.5453);}float ruido(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float n=i.x+i.y*57.+i.z*113.;return mix(mix(mix(ru(n),ru(n+1.),f.x),mix(ru(n+57.),ru(n+58.),f.x),f.y),mix(mix(ru(n+113.),ru(n+114.),f.x),mix(ru(n+170.),ru(n+171.),f.x),f.y),f.z);}
+void main(){vec3 p=normalize(ponto);float n=0.;float a=.5;for(int i=0;i<5;i++){n+=a*ruido(p*9.+vec3(tempo*.07));p*=2.12;a*=.5;}float gran=ruido(normalize(ponto)*180.+tempo*.14);vec3 cor=mix(vec3(.65,.07,.005),vec3(1.8,.92,.18),smoothstep(.25,.75,n));cor+=pow(gran,7.)*.8;gl_FragColor=vec4(cor,1.);}

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#080b0d" />
+    <meta
+      name="description"
+      content="Explore o Sistema Solar através de séculos: um planetário tridimensional com mecânica orbital e comparação temporal."
+    />
+    <title>Planetário Temporal</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="css/principal.css" />
+    <link rel="stylesheet" href="css/interface.css" />
+    <link rel="stylesheet" href="css/responsividade.css" />
+    <link rel="stylesheet" href="css/bifurcacao.css" />
+  </head>
+  <body>
+    <main id="observatorio">
+      <canvas
+        id="universo"
+        aria-label="Sistema Solar tridimensional. Arraste para girar, use a roda para aproximar."
+      ></canvas>
+      <div id="rotulos"></div>
+      <div class="abertura" id="abertura">
+        <span class="simbolo">◎</span>
+        <p id="carregamento">PREPARANDO O OBSERVATÓRIO</p>
+        <small>PLANETÁRIO TEMPORAL</small
+        ><small class="abertura-lema"
+          >O PASSADO PODE SER OBSERVADO.<br />O FUTURO PODE SER
+          PERTURBADO.</small
+        >
+      </div>
+      <header class="hud cabecalho">
+        <div class="marca">
+          <span class="astrolabio">◎</span>
+          <div>
+            <h1>Planetário Temporal</h1>
+            <p>ESPAÇO, TEMPO E PERSPECTIVA</p>
+          </div>
+        </div>
+        <button id="abrir-comando" class="busca">
+          <span>/</span> Buscar um planeta ou comando <kbd>⌘</kbd>
+        </button>
+        <div class="acoes">
+          <button id="capturar" title="Capturar configuração">
+            ↗ <span>Capturar</span></button
+          ><button id="audio" aria-pressed="false" title="Áudio ambiente">
+            ♫</button
+          ><button id="ajuda" title="Ajuda e fontes">?</button>
+        </div>
+      </header>
+      <aside class="hud painel esquerdo" id="painel-esquerdo">
+        <div class="abas">
+          <button class="ativo" data-aba="sistema">Sistema</button
+          ><button data-aba="camadas">Camadas</button
+          ><button data-aba="laboratorio">Laboratório</button>
+        </div>
+        <section data-conteudo="sistema">
+          <h2>Referencial</h2>
+          <label
+            >Escala<select id="escala">
+              <option value="didatica">Didática</option>
+              <option value="proporcional">Proporcional real</option>
+            </select></label
+          ><label
+            >Centro<select id="referencial">
+              <option value="sol">Heliocêntrico</option>
+              <option value="terra">Geocêntrico visual</option>
+            </select></label
+          >
+          <h2>Corpos celestes</h2>
+          <div id="lista-planetas"></div>
+          <h2>Ponto de observação</h2>
+          <select id="camera-modo" aria-label="Modo de câmera">
+            <option value="livre">Órbita livre</option>
+            <option value="orbital">Seguir posição</option>
+            <option value="lateral">Seguir lateralmente</option>
+            <option value="superior">Visão superior</option>
+            <option value="sol">Do planeta para o Sol</option>
+            <option value="do-sol">Do Sol para o planeta</option>
+          </select>
+          <div class="dupla">
+            <button id="visao-superior">Vista superior</button
+            ><button id="visao-geral">Visão geral</button>
+          </div>
+        </section>
+        <section data-conteudo="camadas" hidden>
+          <h2>Elementos visíveis</h2>
+          <label class="alternar"
+            >Órbitas<input id="orbitas" type="checkbox" checked /></label
+          ><label class="alternar"
+            >Cinturão de asteroides<input
+              id="asteroides"
+              type="checkbox"
+              checked /></label
+          ><label class="alternar"
+            >Nomes dos planetas<input
+              id="nomes"
+              type="checkbox"
+              checked /></label
+          ><label class="alternar"
+            >Plano da eclíptica<input id="grade" type="checkbox" /></label
+          ><label class="alternar"
+            >Relógio do Sistema Solar<input id="relogio" type="checkbox"
+          /></label>
+          <h2>Rastro temporal</h2>
+          <select id="rastro" aria-label="Duração do rastro">
+            <option value="0">Desligado</option>
+            <option value="orbita">Uma órbita</option>
+            <option value="3652.5">10 anos</option>
+            <option value="36525">100 anos</option>
+            <option value="365250">1.000 anos</option>
+            <option value="sessao">Histórico da sessão</option>
+          </select>
+          <p class="nota">
+            Trajetória do corpo selecionado. No referencial terrestre, revela o
+            movimento relativo.
+          </p>
+          <h2>Camadas de tempo</h2>
+          <button id="eco">Eco temporal · 1500–2100</button
+          ><button id="cascata">Órbitas em cascata</button
+          ><button id="limpar">Limpar registros</button>
+          <h2>Ambiente</h2>
+          <label
+            >Seed visual<input
+              id="seed"
+              type="number"
+              value="1977"
+              min="1"
+              max="999999" /></label
+          ><label
+            >Qualidade<select id="qualidade">
+              <option value="auto">Automática</option>
+              <option value="baixa">Baixa</option>
+              <option value="media">Média</option>
+              <option value="alta">Alta</option>
+              <option value="extrema">Extrema</option>
+            </select></label
+          ><button id="giroscopio">Ativar giroscópio</button
+          ><button id="imersao">Modo observatório · H</button>
+        </section>
+        <section data-conteudo="laboratorio" hidden>
+          <h2>Assinatura orbital</h2>
+          <div class="dupla">
+            <select id="corpo-a" aria-label="Primeiro corpo"></select
+            ><select id="corpo-b" aria-label="Segundo corpo"></select>
+          </div>
+          <label
+            >Período<select id="periodo-assinatura">
+              <option value="8">8 anos</option>
+              <option value="50">50 anos</option>
+              <option value="100">100 anos</option>
+              <option value="1000">1.000 anos</option>
+            </select></label
+          ><button id="assinatura" class="destaque">Gerar assinatura</button>
+          <h2>Movimento retrógrado</h2>
+          <select id="corpo-retrogrado" aria-label="Corpo retrógrado">
+            <option value="3">Marte</option>
+            <option value="4">Júpiter</option>
+            <option value="5">Saturno</option></select
+          ><button id="retrogrado">Traçar céu visto da Terra</button>
+          <p class="nota">
+            Direções geocêntricas projetadas em uma esfera, durante dois anos.
+          </p>
+          <h2>Eventos históricos</h2>
+          <select id="evento" aria-label="Viajar para evento">
+            <option value="">Escolha uma época</option>
+            <option value="15/02/1564">Nascimento de Galileu · 1564</option>
+            <option value="05/07/1687">Principia · 1687</option>
+            <option value="13/03/1781">Descoberta de Urano · 1781</option>
+            <option value="23/09/1846">Descoberta de Netuno · 1846</option>
+            <option value="20/07/1969">Apollo 11 · 1969</option>
+            <option value="05/09/1977">Lançamento da Voyager 1</option>
+          </select>
+          <h2>Dados científicos</h2>
+          <button id="dados-jpl">Arquivo JPL / Defesa planetária</button>
+        </section>
+        <div class="rodape-painel">
+          <span class="ponto"></span> MECÂNICA KEPLERIANA
+          <span id="fps">60 FPS</span>
+        </div>
+      </aside>
+      <aside class="hud direito" id="painel-direito">
+        <section class="painel comparacao">
+          <div class="titulo-linha">
+            <h2>Comparar épocas</h2>
+            <span>⇄</span>
+          </div>
+          <label
+            >Época B<input
+              id="data-b"
+              value="11/09/1500"
+              inputmode="numeric"
+              aria-label="Data comparada" /></label
+          ><select id="comparacao" aria-label="Modo de comparação">
+            <option value="desligado">Uma época</option>
+            <option value="sobreposicao">Sobreposição temporal</option>
+            <option value="vertical">Divisão vertical</option>
+            <option value="morph">Morph temporal</option></select
+          ><label id="morph-controle" hidden
+            >Interpolação <output id="porcentagem">50%</output
+            ><input id="morph" type="range" min="0" max="100" value="50"
+          /></label>
+          <div id="diferencas"></div>
+        </section>
+        <section class="painel informacoes">
+          <div class="titulo-linha">
+            <div>
+              <p class="sobretitulo">CORPO EM OBSERVAÇÃO</p>
+              <h2 id="nome-planeta">Saturno</h2>
+            </div>
+            <span id="icone-planeta">♄</span>
+          </div>
+          <div id="informacoes"></div>
+          <button id="seguir" class="destaque">Explorar este planeta</button>
+        </section>
+        <section class="painel mapa">
+          <h2>Minimapa orbital <span>J2000</span></h2>
+          <canvas
+            id="minimapa"
+            width="480"
+            height="220"
+            aria-label="Visão superior do Sistema Solar"
+          ></canvas>
+        </section>
+      </aside>
+      <div id="divisor" hidden>
+        <span id="epoca-a"></span><span id="epoca-b"></span>
+      </div>
+      <div class="hud legenda-cena">
+        <span id="modo-cena">SISTEMA SOLAR</span>
+        <p id="mensagem-cena">Arraste para orbitar · role para explorar</p>
+      </div>
+      <section class="hud temporal">
+        <div class="linha-controles">
+          <div class="data-atual">
+            <span>DATA SIMULADA · UTC</span
+            ><input
+              id="data"
+              aria-label="Minha data"
+              value="11/09/2026"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="transporte">
+            <button id="passo-atras" title="Voltar um dia">−</button
+            ><button id="reverter" title="Reverter tempo" aria-pressed="false">
+              ↶</button
+            ><button id="play" class="play" title="Reproduzir ou pausar">
+              ▶</button
+            ><button id="passo-frente" title="Avançar um dia">+</button>
+          </div>
+          <select id="velocidade" aria-label="Velocidade temporal">
+            <option value="0.000011574074074">Tempo real</option>
+            <option value="0.0416666667">1 hora / segundo</option>
+            <option value="1" selected>1 dia / segundo</option>
+            <option value="30.4375">1 mês / segundo</option>
+            <option value="365.25">1 ano / segundo</option>
+            <option value="3652.5">10 anos / segundo</option>
+            <option value="36525">100 anos / segundo</option>
+            <option value="365250">1.000 anos / segundo</option></select
+          ><button id="agora">Agora</button>
+        </div>
+        <div class="regua">
+          <input
+            type="range"
+            id="timeline"
+            min="1"
+            max="5000"
+            step=".001"
+            value="2026"
+            aria-label="Linha temporal, anos de 1 a 5000"
+          />
+          <div class="marcacoes">
+            <span>1</span><span>1000</span><span>2000</span><span>3000</span
+            ><span>4000</span><span>5000</span>
+          </div>
+        </div>
+        <div class="estado-tempo">
+          <span id="estado-tempo">TEMPO SUSPENSO</span
+          ><span id="precisao">Simulação astronômica aproximada</span
+          ><span id="jd"></span>
+        </div>
+      </section>
+      <footer class="hud rodape">
+        <span>PLANETÁRIO TEMPORAL</span
+        ><span>ELEMENTOS ORBITAIS JPL · RENDERIZAÇÃO LOCAL</span
+        ><span>O TEMPO TAMBÉM É UMA PAISAGEM</span>
+      </footer>
+      <nav class="navegacao-mobile hud">
+        <button id="menu-mobile">☰ <span>Instrumentos</span></button
+        ><button id="info-mobile">◎ <span>Planeta</span></button>
+      </nav>
+      <button id="restaurar" hidden>◎ Mostrar instrumentos · H</button>
+      <div id="aviso" role="status" aria-live="polite"></div>
+      <dialog id="paleta">
+        <form id="form-comando">
+          <div class="titulo-linha">
+            <h2>Navegar pelo tempo</h2>
+            <button type="button" data-fechar>×</button>
+          </div>
+          <input
+            id="comando"
+            autocomplete="off"
+            placeholder="ir para Saturno"
+            aria-label="Comando ou nome do planeta"
+          />
+          <p>
+            Terra · data 20/07/1969 · acelerar 100x<br />comparar 1500 com 2350
+            · seguir Terra
+          </p>
+          <button class="destaque">Executar ↵</button>
+        </form>
+      </dialog>
+      <dialog id="dialogo-ajuda">
+        <div class="titulo-linha">
+          <h2>O observatório</h2>
+          <button data-fechar>×</button>
+        </div>
+        <p>
+          Arraste para orbitar. Roda ou gesto de pinça para aproximar. Botão
+          direito ou dois dedos para deslocar. Selecione um corpo pelo nome ou
+          na cena.
+        </p>
+        <dl class="atalhos">
+          <dt>Espaço</dt>
+          <dd>Reproduzir / pausar</dd>
+          <dt>R</dt>
+          <dd>Tempo real</dd>
+          <dt>H</dt>
+          <dd>Ocultar instrumentos</dd>
+          <dt>F</dt>
+          <dd>Seguir corpo</dd>
+          <dt>1 / 2 / 3</dt>
+          <dd>Vista superior / inclinada / lateral</dd>
+          <dt>/</dt>
+          <dd>Paleta de comandos</dd>
+          <dt>Esc</dt>
+          <dd>Fechar painel</dd>
+        </dl>
+        <h3>Ciência e limites</h3>
+        <p>
+          Elementos seculares da JPL, referencial eclíptico J2000, equação de
+          Kepler por Newton–Raphson. A Terra representa aproximadamente o
+          baricentro Terra–Lua. Conversão local em calendário gregoriano
+          proléptico; UTC tratado como aproximação de TDB. Após 3000, as órbitas
+          são extrapolações sem precisão garantida. Luas usam órbitas circulares
+          ilustrativas, sem efemérides de fase. Escala didática comprime
+          distâncias logaritmicamente. Na escala proporcional os corpos podem
+          ficar menores que um pixel; use a busca para aproximar.
+        </p>
+        <p>
+          A iluminação e os materiais são interpretações visuais, incluindo a
+          sombra aproximada dos anéis; não constituem uma simulação fotométrica.
+        </p>
+        <h3>Universo Bifurcado</h3>
+        <p>
+          A e B são integradas pelo mesmo modelo newtoniano. A é um controle sem
+          intervenção, não uma série de observações. Estados iniciais podem vir
+          de vetores Horizons na época arquivada ou de elementos locais
+          aproximados. Os estados físicos usam eclíptica J2000, unidades
+          astronômicas, dias e massas solares. Os diagnósticos são
+          heliocêntricos.
+        </p>
+        <p>
+          Velocity Verlet usa passos iguais entre A/B, reduzidos em encontros; a
+          adaptação não preserva a propriedade simplética estrita. Verifique a
+          deriva de energia e repita com passo menor antes de interpretar
+          divergências pequenas. Relatividade, marés, perda de massa e forças
+          não gravitacionais não estão incluídas. Massas desconhecidas são
+          partículas teste. A colisão geométrica interrompe o cálculo sem prever
+          o impacto.
+        </p>
+        <p>
+          Monte Carlo usa a covariância marginal dos seis elementos osculantes
+          SBDB, correlações gaussianas e propagação de dois corpos. A1/A2 e
+          perturbações planetárias não são propagadas. Não calcula probabilidade
+          de impacto. Amplificações visuais não alteram os números físicos.
+        </p>
+        <p>
+          <a
+            href="https://ssd-api.jpl.nasa.gov/doc/sbdb.html"
+            target="_blank"
+            rel="noopener"
+            >JPL SBDB · elementos e covariância</a
+          >
+          ·
+          <a
+            href="https://ssd-api.jpl.nasa.gov/doc/cad.html"
+            target="_blank"
+            rel="noopener"
+            >JPL CAD · encontros</a
+          >
+        </p>
+        <h3>Fontes e licenças</h3>
+        <p>
+          <a
+            href="https://ssd.jpl.nasa.gov/planets/approx_pos.html"
+            target="_blank"
+            rel="noopener"
+            >NASA/JPL · elementos orbitais</a
+          ><br /><a
+            href="https://www.solarsystemscope.com/textures/"
+            target="_blank"
+            rel="noopener"
+            >Solar System Scope / INOVE · texturas CC BY 4.0</a
+          ><br /><a href="https://threejs.org" target="_blank" rel="noopener"
+            >Three.js · licença MIT</a
+          >
+        </p>
+      </dialog>
+      <dialog id="dialogo-dados">
+        <div class="titulo-linha">
+          <h2>Arquivo científico JPL</h2>
+          <button data-fechar>×</button>
+        </div>
+        <p>
+          Horizons, conversor Julian Date, SBDB, aproximações, Sentry e Scout
+          são consultados pelo atualizador local. As APIs SSD não permitem
+          incorporação direta em sites. Carregue o arquivo exportado para
+          examinar os resultados aqui.
+        </p>
+        <label class="arquivo"
+          >Importar arquivo JPL<input
+            id="importar"
+            type="file"
+            accept=".json,application/json" /></label
+        ><select id="fonte-jpl" aria-label="Fonte científica">
+          <option value="horizons">Horizons · validação orbital</option>
+          <option value="jd">Julian Date</option>
+          <option value="sbdb">SBDB · corpos menores</option>
+          <option value="cad">Encontros cósmicos</option>
+          <option value="sentry">Defesa planetária · Sentry</option>
+          <option value="scout">Defesa planetária · Scout</option>
+          <option value="webgeocalc">SPICE / WebGeocalc</option>
+        </select>
+        <p id="resumo-jpl"></p>
+        <div id="resultado-jpl" class="tabela-cientifica"></div>
+        <a
+          href="https://wgc2.jpl.nasa.gov:8443/webgeocalc/"
+          target="_blank"
+          rel="noopener"
+          >Abrir WebGeocalc oficial ↗</a
+        >
+      </dialog>
+    </main>
+    <script type="module">
+      import("./js/principal.js").catch((erro) => {
+        document.getElementById("abertura").style.display = "grid";
+        document.getElementById("carregamento").textContent =
+          "Não foi possível iniciar: " + erro.message;
+      });
+    </script>
+  </body>
+</html>

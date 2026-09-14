@@ -1,0 +1,1 @@
+varying vec3 ponto;varying vec3 normalLocal;void main(){ponto=position;normalLocal=normal;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}
